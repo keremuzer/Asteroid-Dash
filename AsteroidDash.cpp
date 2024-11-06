@@ -61,12 +61,95 @@ void AsteroidDash::read_player(const string &player_file_name, const string &pla
         spacecraft_shape.push_back(row);
     }
     player = new Player(spacecraft_shape, row, col, player_name);
+    file.close();
 }
 
 // Function to read celestial objects from a file
 void AsteroidDash::read_celestial_objects(const string &input_file)
 {
     // TODO: Your code here
+    CelestialObject *current = celestial_objects_list_head;
+    std::ifstream file;
+    file.open(input_file);
+    std::string line;
+    while (getline(file, line))
+    {
+        std::istringstream iss(line);
+        std::vector<std::vector<bool>> shape;
+        ObjectType obj_type;
+        char val;
+        while (iss >> val)
+        {
+            if (val == '[')
+            {
+                obj_type = ASTEROID;
+                while (val != ']')
+                {
+                    std::vector<bool> row;
+                    while (iss >> val && val != ']')
+                    {
+                        row.push_back(val);
+                    }
+                    shape.push_back(row);
+                    // go to the next line
+
+                    getline(file, line);
+                    iss = std::istringstream(line);
+                }
+                int s = std::stoi(line.substr(2));
+                getline(file, line);
+                int t = std::stoi(line.substr(2));
+                if (celestial_objects_list_head == nullptr)
+                {
+                    celestial_objects_list_head = new CelestialObject(shape, obj_type, s, t);
+                    current = celestial_objects_list_head;
+                }
+                else
+                {
+                    current->next_celestial_object = new CelestialObject(shape, obj_type, s, t);
+                    current = current->next_celestial_object;
+                }
+            }
+
+            if (val == '{')
+            {
+                while (val != '}')
+                {
+                    std::vector<bool> row;
+                    while (iss >> val && val != '}')
+                    {
+                        row.push_back(val);
+                    }
+                    shape.push_back(row);
+                    // go to the next line
+                    getline(file, line);
+                    iss = std::istringstream(line);
+                }
+                int s = std::stoi(line.substr(2));
+                getline(file, line);
+                int t = std::stoi(line.substr(2));
+                getline(file, line);
+                if (line == "e:ammo")
+                {
+                    obj_type = AMMO;
+                }
+                else if (line == "e:life")
+                {
+                    obj_type = LIFE_UP;
+                }
+                if (celestial_objects_list_head == nullptr)
+                {
+                    celestial_objects_list_head = new CelestialObject(shape, obj_type, s, t);
+                    current = celestial_objects_list_head;
+                }
+                else
+                {
+                    current->next_celestial_object = new CelestialObject(shape, obj_type, s, t);
+                    current = current->next_celestial_object;
+                }
+            }
+        }
+    }
 }
 
 // Print the entire space grid
