@@ -42,26 +42,35 @@ void AsteroidDash::read_space_grid(const string &input_file)
 // Function to read the player from a file
 void AsteroidDash::read_player(const string &player_file_name, const string &player_name)
 {
-    // TODO: Your code here
-    std::ifstream file;
-    file.open(player_file_name);
+    std::ifstream file(player_file_name);
+    if (!file)
+    {
+        std::cerr << "Error: Could not open file " << player_file_name << std::endl;
+        return;
+    }
+
     int row, col;
     file >> row >> col;
+
     std::string line;
-    std::vector<std::vector<bool>> spacecraft_shape;
+    vector<vector<bool>> spacecraft_shape;
+
     while (getline(file, line))
     {
-        std::vector<bool> row;
-        std::istringstream iss(line);
-        bool val;
-        while (iss >> val)
+        std::vector<bool> shape_row;
+        for (char c : line)
         {
-            row.push_back(val);
+            if (c == '1')
+                shape_row.push_back(true);
+            else if (c == '0')
+                shape_row.push_back(false);
         }
-        spacecraft_shape.push_back(row);
+        if (!shape_row.empty())
+            spacecraft_shape.push_back(shape_row);
     }
-    player = new Player(spacecraft_shape, row, col, player_name);
     file.close();
+
+    player = new Player(spacecraft_shape, row, col, player_name);
 }
 
 // Function to read celestial objects from a file
@@ -88,14 +97,15 @@ void AsteroidDash::read_celestial_objects(const string &input_file)
                     std::vector<bool> row;
                     while (iss >> val && val != ']')
                     {
-                        row.push_back(val);
+                        row.push_back(val == '1' ? true : false);
                     }
                     shape.push_back(row);
-                    // go to the next line
 
+                    // go to the next line
                     getline(file, line);
                     iss = std::istringstream(line);
                 }
+
                 int s = std::stoi(line.substr(2));
                 getline(file, line);
                 int t = std::stoi(line.substr(2));
@@ -109,6 +119,7 @@ void AsteroidDash::read_celestial_objects(const string &input_file)
                     current->next_celestial_object = new CelestialObject(shape, obj_type, s, t);
                     current = current->next_celestial_object;
                 }
+                current->create_rotations();
             }
 
             if (val == '{')
@@ -118,9 +129,10 @@ void AsteroidDash::read_celestial_objects(const string &input_file)
                     std::vector<bool> row;
                     while (iss >> val && val != '}')
                     {
-                        row.push_back(val);
+                        row.push_back(val == '1' ? true : false);
                     }
                     shape.push_back(row);
+
                     // go to the next line
                     getline(file, line);
                     iss = std::istringstream(line);
@@ -147,9 +159,11 @@ void AsteroidDash::read_celestial_objects(const string &input_file)
                     current->next_celestial_object = new CelestialObject(shape, obj_type, s, t);
                     current = current->next_celestial_object;
                 }
+                current->create_rotations();
             }
         }
     }
+    file.close();
 }
 
 // Print the entire space grid
