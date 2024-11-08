@@ -55,8 +55,7 @@ void CelestialObject::create_rotations()
         first_rotation->left_rotation = current;
     }
 
-    // Print all rotations in the circular list for verification
-    CelestialObject *current_rotation = first_rotation;
+    /*CelestialObject *current_rotation = first_rotation;
     do
     {
         for (int i = 0; i < current_rotation->shape.size(); i++)
@@ -69,7 +68,7 @@ void CelestialObject::create_rotations()
         }
         std::cout << "---" << std::endl;
         current_rotation = current_rotation->right_rotation;
-    } while (current_rotation != first_rotation);
+    } while (current_rotation != first_rotation);*/
 }
 
 // Function to rotate the celestial object to the right

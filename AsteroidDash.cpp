@@ -177,6 +177,28 @@ void AsteroidDash::print_space_grid() const
 void AsteroidDash::update_space_grid()
 {
     // TODO: Your code here
+
+    // clear the grid
+    for (int i = 0; i < space_grid.size(); i++)
+    {
+        for (int j = 0; j < space_grid[i].size(); j++)
+        {
+            space_grid[i][j] = 0;
+        }
+    }
+
+    // Update the player's position
+    for (int i = 0; i < player->spacecraft_shape.size(); i++)
+    {
+        for (int j = 0; j < player->spacecraft_shape[i].size(); j++)
+        {
+            if (player->spacecraft_shape[i][j])
+            {
+                // Update the player's new position
+                space_grid[player->position_row + i][player->position_col + j] = 1;
+            }
+        }
+    }
 }
 
 // Corresponds to the SHOOT command.
@@ -191,4 +213,7 @@ void AsteroidDash::shoot()
 AsteroidDash::~AsteroidDash()
 {
     // TODO: Your code here
+    delete player;
+    CelestialObject::delete_rotations(celestial_objects_list_head);
+    leaderboard.write_to_file(leaderboard_file_name);
 }
