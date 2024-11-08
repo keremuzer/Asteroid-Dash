@@ -6,7 +6,8 @@
 
 using namespace std;
 
-class Player {
+class Player
+{
 public:
     // Player's spacecraft shape
     vector<vector<bool>> spacecraft_shape;
@@ -44,6 +45,14 @@ public:
 
     // Move player to the down in the space grid
     void move_down(int grid_height);
+
+    // Bullet
+    struct bullet
+    {
+        int row;
+        int col;
+    };
+    vector<bullet> bullets;
 };
 
 #endif // PLAYER_H

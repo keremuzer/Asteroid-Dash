@@ -199,6 +199,16 @@ void AsteroidDash::update_space_grid()
             }
         }
     }
+
+    // Update bullet positions
+    for (int i = 0; i < player->bullets.size(); i++)
+    {
+        if (player->bullets[i].col < space_grid[0].size())
+        {
+            space_grid[player->bullets[i].row][player->bullets[i].col] = 1;
+            player->bullets[i].col++;
+        }
+    }
 }
 
 // Corresponds to the SHOOT command.
@@ -207,6 +217,13 @@ void AsteroidDash::update_space_grid()
 void AsteroidDash::shoot()
 {
     // TODO: Your code here
+    if (player->current_ammo > 0)
+    {
+        player->current_ammo--;
+        int bullet_row = player->position_row + player->spacecraft_shape.size() / 2;
+        int bullet_col = player->position_col + player->spacecraft_shape[0].size();
+        player->bullets.push_back(Player::bullet{bullet_row, bullet_col});
+    }
 }
 
 // Destructor. Remove dynamically allocated member variables here.
