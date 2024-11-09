@@ -51,6 +51,9 @@ public:
     {
         int row;
         int col;
+        bool destroyed = false;
+
+        bullet(int row, int col) : row(row), col(col), destroyed(false) {}
     };
     vector<bullet> bullets;
 };

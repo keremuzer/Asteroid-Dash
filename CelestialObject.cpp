@@ -24,6 +24,7 @@ void CelestialObject::create_rotations()
     CelestialObject *current = this;
     CelestialObject *first_rotation = this;
     CelestialObject *new_rotation = new CelestialObject(current->rotate_right());
+    new_rotation->next_celestial_object = this->next_celestial_object;
 
     if (equals(this->shape, new_rotation->shape))
     {
@@ -39,6 +40,7 @@ void CelestialObject::create_rotations()
         while (true)
         {
             new_rotation = new CelestialObject(current->rotate_right());
+            new_rotation->next_celestial_object = this->next_celestial_object;
 
             if (equals(this->shape, new_rotation->shape))
             {

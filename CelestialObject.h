@@ -55,6 +55,9 @@ public:
 
     // Function to create rotations of a celestial object
     void create_rotations();
+
+    // to check if the object is destroyed
+    bool destroyed = false;
 };
 
 #endif // CELESTIALOBJECT_H

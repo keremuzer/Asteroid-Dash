@@ -6,7 +6,7 @@
     "type": "cppdbg",
     "request": "launch",
     "program": "${workspaceFolder}/test",
-    "args": ["initialize_linked_list"],
+    "args": ["shooting_update"],
     "stopAtEntry": false,
     "cwd": "${workspaceFolder}",
     "environment": [],

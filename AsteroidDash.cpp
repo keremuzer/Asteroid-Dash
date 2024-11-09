@@ -119,7 +119,6 @@ void AsteroidDash::read_celestial_objects(const string &input_file)
                     current->next_celestial_object = new CelestialObject(shape, obj_type, s, t);
                     current = current->next_celestial_object;
                 }
-                current->create_rotations();
             }
 
             if (val == '{')
@@ -159,10 +158,16 @@ void AsteroidDash::read_celestial_objects(const string &input_file)
                     current->next_celestial_object = new CelestialObject(shape, obj_type, s, t);
                     current = current->next_celestial_object;
                 }
-                current->create_rotations();
             }
         }
     }
+    CelestialObject *current_obj = celestial_objects_list_head;
+    while (current_obj != nullptr)
+    {
+        current_obj->create_rotations();
+        current_obj = current_obj->next_celestial_object;
+    }
+
     file.close();
 }
 
@@ -176,8 +181,6 @@ void AsteroidDash::print_space_grid() const
 // It is called in every game tick before moving on to the next tick.
 void AsteroidDash::update_space_grid()
 {
-    // TODO: Your code here
-
     // clear the grid
     for (int i = 0; i < space_grid.size(); i++)
     {
@@ -194,20 +197,132 @@ void AsteroidDash::update_space_grid()
         {
             if (player->spacecraft_shape[i][j])
             {
-                // Update the player's new position
                 space_grid[player->position_row + i][player->position_col + j] = 1;
             }
         }
     }
 
-    // Update bullet positions
-    for (int i = 0; i < player->bullets.size(); i++)
+    // Detect collisions with player
+    CelestialObject *current = celestial_objects_list_head;
+    while (current != nullptr)
     {
-        if (player->bullets[i].col < space_grid[0].size())
+        bool flag = false;
+        if (current->time_of_appearance <= game_time && !current->destroyed)
         {
-            space_grid[player->bullets[i].row][player->bullets[i].col] = 1;
-            player->bullets[i].col++;
+            int max_i = current->shape.size();
+            for (int i = 0; i < max_i; i++)
+            {
+                if (flag)
+                    break;
+                int max_j = current->shape.at(i).size();
+                for (int j = 0; j < max_j; j++)
+                {
+                    if (flag)
+                        break;
+                    if (current->shape[i][j])
+                    {
+                        int row = current->starting_row + i;
+                        int col = space_grid[0].size() - (game_time - current->time_of_appearance) - 1 + j;
+                        if (row >= 0 && row < space_grid.size() && col >= 0 && col < space_grid[0].size())
+                        {
+                            if (space_grid[row][col] == 1)
+                            {
+                                if (current->object_type == ASTEROID)
+                                {
+                                    std::cout << "Asteroid hit" << std::endl;
+                                    player->lives--;
+                                    if (player->lives == 0)
+                                    {
+                                        game_over = true;
+                                    }
+                                    current->destroyed = true;
+                                    flag = true;
+                                }
+                                else if (current->object_type == LIFE_UP)
+                                {
+                                    player->lives++;
+                                    current->destroyed = true;
+                                }
+                                else if (current->object_type == AMMO)
+                                {
+                                    player->current_ammo = player->max_ammo;
+                                    current->destroyed = true;
+                                }
+                                current->delete_rotations(current);
+                            }
+                        }
+                    }
+                }
+            }
         }
+        current = current->next_celestial_object;
+    }
+
+    // Update bullet positions
+    for (int k = 0; k < player->bullets.size(); k++)
+    {
+        Player::bullet &bullet = player->bullets[k];
+        if (bullet.col < space_grid[0].size() && !bullet.destroyed)
+        {
+            space_grid[bullet.row][bullet.col] = 1;
+            bullet.col++;
+        }
+        else
+        {
+            bullet.destroyed = true;
+        }
+    }
+
+    // Update celestial objects
+    CelestialObject *current_obj = celestial_objects_list_head;
+    while (current_obj != nullptr)
+    {
+        bool flag = false;
+        if (current_obj->time_of_appearance <= game_time && !current_obj->destroyed)
+        {
+            for (int i = 0; i < current_obj->shape.size(); i++)
+            {
+                if (flag)
+                    break;
+                for (int j = 0; j < current_obj->shape[i].size(); j++)
+                {
+                    if (flag)
+                        break;
+                    if (current_obj->shape[i][j])
+                    {
+                        int row = current_obj->starting_row + i;
+                        int col = space_grid[0].size() - (game_time - current_obj->time_of_appearance) + j;
+                        col--;
+                        if (row >= 0 && row < space_grid.size() && col >= 0 && col < space_grid[0].size())
+                        {
+                            if (space_grid[row][col] == 1)
+                            {
+                                if (current_obj->object_type == ASTEROID)
+                                {
+                                    std::cout << "Asteroid hit 2" << std::endl;
+                                    space_grid[row][col] = 0;
+                                    current_obj->shape[i][j] = false;
+                                    for (int k = 0; k < player->bullets.size(); k++)
+                                    {
+                                        Player::bullet &bullet = player->bullets[k];
+                                        if (bullet.row == row && bullet.col == col + 1 && !bullet.destroyed)
+                                        {
+                                            std::cout << "Bullet hit" << std::endl;
+                                            bullet.destroyed = true;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                space_grid[row][col] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        current_obj = current_obj->next_celestial_object;
     }
 }
 

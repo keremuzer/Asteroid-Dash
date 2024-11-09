@@ -378,6 +378,22 @@ void shooting_update()
             }
 
             game->update_space_grid();
+            // print space grid
+            for (int i = 0; i < game->space_grid.size(); i++)
+            {
+                for (int j = 0; j < game->space_grid[i].size(); j++)
+                {
+                    if (game->space_grid[i][j] == 0)
+                    {
+                        cout << unoccupiedCellChar;
+                    }
+                    else if (game->space_grid[i][j] == 1)
+                    {
+                        cout << occupiedCellChar;
+                    }
+                }
+                cout << endl;
+            }
             game->game_time += 1;
 
             if (game->game_time == 23)
@@ -555,8 +571,39 @@ void object_movements()
                                           SAMPLE_MOVEMENTS_PLAYER,
                                           SAMPLE_DEFAULT_PLAYER_NAME);
 
+    /*// print expected frames
+    for (int i = 0; i < expected_frames.size(); i++)
+    {
+        for (int j = 0; j < expected_frames[i].size(); j++)
+        {
+            for (int k = 0; k < expected_frames[i][j].size(); k++)
+            {
+                if (expected_frames[i][j][k] == 1)
+                    cout << "██";
+                else
+                    cout << "▒▒";
+            }
+            cout << endl;
+        }
+        cout << "----" << endl;
+    }*/
+
     for (int i = 0; i < 26; i++)
     {
+        // print space grid
+        for (int j = 0; j < game->space_grid.size(); j++)
+        {
+            for (int k = 0; k < game->space_grid[j].size(); k++)
+            {
+                if (game->space_grid[j][k] == 1)
+                    cout << "██";
+                else
+                    cout << "▒▒";
+            }
+            cout << endl;
+        }
+        cout << "----" << endl;
+
         game->update_space_grid();
 
         if (game->space_grid == expected_frames[i])
