@@ -353,6 +353,37 @@ void AsteroidDash::check_bullets_positions()
                                         current->shape[i][j] = false;
                                         space_grid[row][col] = 0;
                                         bullet.destroyed = true;
+
+                                        // check if the asteroid is destroyed
+                                        current->destroyed = true;
+                                        for (int i = 0; i < current->shape.size(); i++)
+                                        {
+                                            for (int j = 0; j < current->shape[i].size(); j++)
+                                            {
+                                                if (current->shape[i][j])
+                                                {
+                                                    current->destroyed = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (current->destroyed)
+                                        {
+                                            int asteroid_score = 0;
+                                            for (int i = 0; i < current->original_shape.size(); i++)
+                                            {
+                                                for (int j = 0; j < current->original_shape[i].size(); j++)
+                                                {
+                                                    if (current->original_shape[i][j])
+                                                    {
+                                                        asteroid_score += 100;
+                                                    }
+                                                }
+                                            }
+                                            current_score += asteroid_score;
+                                        }
+
                                         current_score += 10;
 
                                         current->delete_rotations(current);
