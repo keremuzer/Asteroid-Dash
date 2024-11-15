@@ -58,6 +58,11 @@ public:
 
     // to check if the object is destroyed
     bool destroyed = false;
+
+    int row = starting_row;
+    int col = 0;
+
+    vector<vector<bool>> original_shape = shape;
 };
 
 #endif // CELESTIALOBJECT_H

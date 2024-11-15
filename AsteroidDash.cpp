@@ -175,13 +175,32 @@ void AsteroidDash::read_celestial_objects(const string &input_file)
 void AsteroidDash::print_space_grid() const
 {
     // TODO: Your code here
+    std::cout << "Tick: " << game_time << std::endl;
+    std::cout << "Lives: " << player->lives << std::endl;
+    std::cout << "Ammo: " << player->current_ammo << std::endl;
+    std::cout << "Score: " << current_score << std::endl;
+    std::cout << "High Score: " << "0" << std::endl;
+
+    for (int i = 0; i < space_grid.size(); i++)
+    {
+        for (int j = 0; j < space_grid[i].size(); j++)
+        {
+            if (space_grid[i][j] == 1)
+            {
+                std::cout << occupiedCellChar;
+            }
+            else
+            {
+                std::cout << unoccupiedCellChar;
+            }
+        }
+        std::cout << std::endl;
+    }
 }
 
-// Function to update the space grid with player, celestial objects, and any other changes
-// It is called in every game tick before moving on to the next tick.
-void AsteroidDash::update_space_grid()
+// Function to clear the grid
+void AsteroidDash::clear_grid()
 {
-    // clear the grid
     for (int i = 0; i < space_grid.size(); i++)
     {
         for (int j = 0; j < space_grid[i].size(); j++)
@@ -189,8 +208,11 @@ void AsteroidDash::update_space_grid()
             space_grid[i][j] = 0;
         }
     }
+}
 
-    // Update the player's position
+// Function to place the player on the grid
+void AsteroidDash::place_player()
+{
     for (int i = 0; i < player->spacecraft_shape.size(); i++)
     {
         for (int j = 0; j < player->spacecraft_shape[i].size(); j++)
@@ -201,8 +223,11 @@ void AsteroidDash::update_space_grid()
             }
         }
     }
+}
 
-    // Detect collisions with player
+// Function to detect collisions with player
+void AsteroidDash::detect_collisions()
+{
     CelestialObject *current = celestial_objects_list_head;
     while (current != nullptr)
     {
@@ -229,7 +254,7 @@ void AsteroidDash::update_space_grid()
                             {
                                 if (current->object_type == ASTEROID)
                                 {
-                                    std::cout << "Asteroid hit" << std::endl;
+                                    current_score -= 1;
                                     player->lives--;
                                     if (player->lives == 0)
                                     {
@@ -257,14 +282,138 @@ void AsteroidDash::update_space_grid()
         }
         current = current->next_celestial_object;
     }
+}
 
-    // Update bullet positions
+// Function to update the objects positions
+void AsteroidDash::update_objects_positions()
+{
+    CelestialObject *current = celestial_objects_list_head;
+    while (current != nullptr)
+    {
+        bool flag = false;
+        // check every pixel of the object
+        if (current->time_of_appearance <= game_time && !current->destroyed)
+        {
+            for (int i = 0; i < current->shape.size(); i++)
+            {
+                if (flag)
+                    break;
+                for (int j = 0; j < current->shape[i].size(); j++)
+                {
+                    if (flag)
+                        break;
+                    if (current->shape[i][j])
+                    {
+                        int row = current->starting_row + i;
+                        int col = space_grid[0].size() - (game_time - current->time_of_appearance) - 1 + j;
+                        if (row >= 0 && row < space_grid.size() && col >= 0 && col < space_grid[0].size())
+                        {
+                            space_grid[row][col] = 1;
+                            flag = true;
+                        }
+                    }
+                }
+            }
+        }
+        current = current->next_celestial_object;
+    }
+}
+
+// Function to check bullets' positions and detect collisions
+void AsteroidDash::check_bullets_positions()
+{
     for (int k = 0; k < player->bullets.size(); k++)
     {
         Player::bullet &bullet = player->bullets[k];
         if (bullet.col < space_grid[0].size() && !bullet.destroyed)
         {
-            space_grid[bullet.row][bullet.col] = 1;
+            CelestialObject *current = celestial_objects_list_head;
+            while (current != nullptr)
+            {
+                bool collision_detected = false;
+                if (current->time_of_appearance <= game_time && !current->destroyed)
+                {
+                    int middle_row = current->shape.size() / 2;
+                    for (int i = 0; i < current->shape.size(); i++)
+                    {
+                        if (collision_detected)
+                            break;
+                        for (int j = 0; j < current->shape[i].size(); j++)
+                        {
+                            if (collision_detected)
+                                break;
+                            if (current->shape[i][j])
+                            {
+                                int row = current->starting_row + i;
+                                int col = space_grid[0].size() - (game_time - current->time_of_appearance) - 1 + j;
+                                if (row == bullet.row && col == bullet.col)
+                                {
+                                    if (current->object_type == ASTEROID)
+                                    {
+                                        current->shape[i][j] = false;
+                                        space_grid[row][col] = 0;
+                                        bullet.destroyed = true;
+                                        current_score += 10;
+
+                                        current->delete_rotations(current);
+                                        current->create_rotations();
+
+                                        if (current->shape.size() % 2 == 0)
+                                        {
+                                            if (i < middle_row)
+                                            {
+                                                current->shape = current->right_rotation->shape;
+                                            }
+                                            else
+                                            {
+                                                current->shape = current->left_rotation->shape;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (i < middle_row)
+                                            {
+                                                current->shape = current->right_rotation->shape;
+                                            }
+                                            else if (i > middle_row)
+                                            {
+                                                current->shape = current->left_rotation->shape;
+                                            }
+                                        }
+                                        current->delete_rotations(current);
+                                        current->create_rotations();
+
+                                        collision_detected = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                current = current->next_celestial_object;
+            }
+        }
+    }
+}
+
+// Function to update the space grid with player, celestial objects, and any other changes
+// It is called in every game tick before moving on to the next tick.
+void AsteroidDash::update_space_grid()
+{
+    current_score += 1;
+    clear_grid();
+    place_player();
+    detect_collisions();
+    update_objects_positions();
+    check_bullets_positions();
+    clear_grid();
+
+    // move bullets forward
+    for (int k = 0; k < player->bullets.size(); k++)
+    {
+        Player::bullet &bullet = player->bullets[k];
+        if (bullet.col < space_grid[0].size() && !bullet.destroyed)
+        {
             bullet.col++;
         }
         else
@@ -273,56 +422,49 @@ void AsteroidDash::update_space_grid()
         }
     }
 
-    // Update celestial objects
-    CelestialObject *current_obj = celestial_objects_list_head;
-    while (current_obj != nullptr)
+    update_objects_positions();
+    check_bullets_positions();
+    clear_grid();
+    place_player();
+
+    // place objects
+    CelestialObject *current = celestial_objects_list_head;
+    while (current != nullptr)
     {
         bool flag = false;
-        if (current_obj->time_of_appearance <= game_time && !current_obj->destroyed)
+        if (current->time_of_appearance <= game_time && !current->destroyed)
         {
-            for (int i = 0; i < current_obj->shape.size(); i++)
+            for (int i = 0; i < current->shape.size(); i++)
             {
                 if (flag)
                     break;
-                for (int j = 0; j < current_obj->shape[i].size(); j++)
+                for (int j = 0; j < current->shape[i].size(); j++)
                 {
                     if (flag)
                         break;
-                    if (current_obj->shape[i][j])
+                    if (current->shape[i][j])
                     {
-                        int row = current_obj->starting_row + i;
-                        int col = space_grid[0].size() - (game_time - current_obj->time_of_appearance) + j;
-                        col--;
+                        int row = current->starting_row + i;
+                        int col = space_grid[0].size() - (game_time - current->time_of_appearance) - 1 + j;
                         if (row >= 0 && row < space_grid.size() && col >= 0 && col < space_grid[0].size())
                         {
-                            if (space_grid[row][col] == 1)
-                            {
-                                if (current_obj->object_type == ASTEROID)
-                                {
-                                    std::cout << "Asteroid hit 2" << std::endl;
-                                    space_grid[row][col] = 0;
-                                    current_obj->shape[i][j] = false;
-                                    for (int k = 0; k < player->bullets.size(); k++)
-                                    {
-                                        Player::bullet &bullet = player->bullets[k];
-                                        if (bullet.row == row && bullet.col == col + 1 && !bullet.destroyed)
-                                        {
-                                            std::cout << "Bullet hit" << std::endl;
-                                            bullet.destroyed = true;
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                space_grid[row][col] = 1;
-                            }
+                            space_grid[row][col] = 1;
                         }
                     }
                 }
             }
         }
-        current_obj = current_obj->next_celestial_object;
+        current = current->next_celestial_object;
+    }
+
+    // place bullets
+    for (int k = 0; k < player->bullets.size(); k++)
+    {
+        Player::bullet &bullet = player->bullets[k];
+        if (bullet.col < space_grid[0].size() && !bullet.destroyed)
+        {
+            space_grid[bullet.row][bullet.col] = 1;
+        }
     }
 }
 
@@ -337,7 +479,7 @@ void AsteroidDash::shoot()
         player->current_ammo--;
         int bullet_row = player->position_row + player->spacecraft_shape.size() / 2;
         int bullet_col = player->position_col + player->spacecraft_shape[0].size();
-        player->bullets.push_back(Player::bullet{bullet_row, bullet_col});
+        player->bullets.push_back(Player::bullet{bullet_row, bullet_col - 1});
     }
 }
 

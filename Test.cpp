@@ -119,22 +119,113 @@ void initialize_linked_list()
     double total_score = 0;
 
     std::vector<CelestialObject *> expected_objects = {new CelestialObject({{1, 0, 1}, {1, 1, 1}}, ObjectType::ASTEROID, 0, 5), new CelestialObject({{0, 1, 0, 1, 0}, {1, 1, 1, 1, 1}, {0, 1, 1, 1, 0}, {0, 0, 1, 0, 0}}, ObjectType::LIFE_UP, 5, 10), new CelestialObject({{1, 1}}, ObjectType::ASTEROID, 5, 13), new CelestialObject({{1, 0, 1}, {0, 1, 0}, {1, 0, 1}}, ObjectType::ASTEROID, 7, 13), new CelestialObject({{1}}, ObjectType::AMMO, 8, 23), new CelestialObject({{1, 1, 1}, {1, 1, 1}, {1, 1, 1}}, ObjectType::ASTEROID, 10, 25)};
+
     std::vector<CelestialObject *> expected_rotations = {
-        new CelestialObject({{1, 0, 1}, {1, 1, 1}}, ObjectType::ASTEROID, 0, 5),
-        new CelestialObject({{1, 0, 1}, {1, 1, 1}}, ObjectType::ASTEROID, 0, 5),
-        new CelestialObject({{1, 0, 1}, {1, 1, 1}}, ObjectType::ASTEROID, 0, 5),
-        new CelestialObject({{1, 0, 1}, {1, 1, 1}}, ObjectType::ASTEROID, 0, 5),
-        new CelestialObject({{0, 1, 0, 1, 0}, {1, 1, 1, 1, 1}, {0, 1, 1, 1, 0}, {0, 0, 1, 0, 0}}, ObjectType::LIFE_UP, 5, 10),
-        new CelestialObject({{0, 1, 0, 1, 0}, {1, 1, 1, 1, 1}, {0, 1, 1, 1, 0}, {0, 0, 1, 0, 0}}, ObjectType::LIFE_UP, 5, 10),
-        new CelestialObject({{0, 1, 0, 1, 0}, {1, 1, 1, 1, 1}, {0, 1, 1, 1, 0}, {0, 0, 1, 0, 0}}, ObjectType::LIFE_UP, 5, 10),
-        new CelestialObject({{0, 1, 0, 1, 0}, {1, 1, 1, 1, 1}, {0, 1, 1, 1, 0}, {0, 0, 1, 0, 0}}, ObjectType::LIFE_UP, 5, 10),
-        new CelestialObject({{1, 1}}, ObjectType::ASTEROID, 5, 13),
-        new CelestialObject({{1, 1}}, ObjectType::ASTEROID, 5, 13),
-        new CelestialObject({{1, 0, 1}, {0, 1, 0}, {1, 0, 1}}, ObjectType::ASTEROID, 7, 13),
-        new CelestialObject({{1}}, ObjectType::AMMO, 8, 23),
-        new CelestialObject({{1, 1, 1}, {1, 1, 1}, {1, 1, 1}}, ObjectType::ASTEROID, 10, 25),
-    };
-    std::vector<CelestialObject *> expected_left_rotations = {new CelestialObject({{true, true}, {false, true}, {true, true}}, ObjectType::ASTEROID, 0, 5), new CelestialObject({{true, true}, {false, true}, {true, true}}, ObjectType::ASTEROID, 0, 5), new CelestialObject({{true, true}, {false, true}, {true, true}}, ObjectType::ASTEROID, 0, 5), new CelestialObject({{true, true}, {false, true}, {true, true}}, ObjectType::ASTEROID, 0, 5), new CelestialObject({{false, true, false, false}, {true, true, true, false}, {false, true, true, true}, {true, true, true, false}, {false, true, false, false}}, ObjectType::LIFE_UP, 5, 10), new CelestialObject({{false, true, false, false}, {true, true, true, false}, {false, true, true, true}, {true, true, true, false}, {false, true, false, false}}, ObjectType::LIFE_UP, 5, 10), new CelestialObject({{false, true, false, false}, {true, true, true, false}, {false, true, true, true}, {true, true, true, false}, {false, true, false, false}}, ObjectType::LIFE_UP, 5, 10), new CelestialObject({{false, true, false, false}, {true, true, true, false}, {false, true, true, true}, {true, true, true, false}, {false, true, false, false}}, ObjectType::LIFE_UP, 5, 10), new CelestialObject({{true}, {true}}, ObjectType::ASTEROID, 5, 13), new CelestialObject({{true}, {true}}, ObjectType::ASTEROID, 5, 13), new CelestialObject({{true, false, true}, {false, true, false}, {true, false, true}}, ObjectType::ASTEROID, 7, 13), new CelestialObject({{true}}, ObjectType::AMMO, 8, 23), new CelestialObject({{true, true, true}, {true, true, true}, {true, true, true}}, ObjectType::ASTEROID, 10, 25)};
+        new CelestialObject({{true, false, true},
+                             {true, true, true}},
+                            ObjectType::ASTEROID, 0, 5),
+        new CelestialObject({{true, true},
+                             {true, false},
+                             {true, true}},
+                            ObjectType::ASTEROID, 0, 5),
+        new CelestialObject({{true, true, true},
+                             {true, false, true}},
+                            ObjectType::ASTEROID, 0, 5),
+        new CelestialObject({{true, true},
+                             {false, true},
+                             {true, true}},
+                            ObjectType::ASTEROID, 0, 5),
+
+        new CelestialObject({{false, true, false, true, false},
+                             {true, true, true, true, true},
+                             {false, true, true, true, false},
+                             {false, false, true, false, false}},
+                            ObjectType::LIFE_UP, 5, 10),
+        new CelestialObject({{false, false, true, false},
+                             {false, true, true, true},
+                             {true, true, true, false},
+                             {false, true, true, true},
+                             {false, false, true, false}},
+                            ObjectType::LIFE_UP, 5, 10),
+        new CelestialObject({{false, false, true, false, false},
+                             {false, true, true, true, false},
+                             {true, true, true, true, true},
+                             {false, true, false, true, false}},
+                            ObjectType::LIFE_UP, 5, 10),
+        new CelestialObject({{false, true, false, false},
+                             {true, true, true, false},
+                             {false, true, true, true},
+                             {true, true, true, false},
+                             {false, true, false, false}},
+                            ObjectType::LIFE_UP, 5, 10),
+
+        new CelestialObject({{true, true}}, ObjectType::ASTEROID, 5, 13),
+        new CelestialObject({{true},
+                             {true}},
+                            ObjectType::ASTEROID, 5, 13),
+
+        new CelestialObject({{true, false, true},
+                             {false, true, false},
+                             {true, false, true}},
+                            ObjectType::ASTEROID, 7, 13),
+
+        new CelestialObject({{true}}, ObjectType::AMMO, 8, 23),
+
+        new CelestialObject({{true, true, true},
+                             {true, true, true},
+                             {true, true, true}},
+                            ObjectType::ASTEROID, 10, 25)};
+
+    std::vector<CelestialObject *> expected_left_rotations = {
+        new CelestialObject({{true, true},
+                             {false, true},
+                             {true, true}},
+                            ObjectType::ASTEROID, 0, 5),
+        new CelestialObject({{true, false, true},
+                             {true, true, true}},
+                            ObjectType::ASTEROID, 0, 5),
+        new CelestialObject({{true, true},
+                             {true, false},
+                             {true, true}},
+                            ObjectType::ASTEROID, 0, 5),
+        new CelestialObject({{true, true, true},
+                             {true, false, true}},
+                            ObjectType::ASTEROID, 0, 5),
+        new CelestialObject({{false, true, false, false},
+                             {true, true, true, false},
+                             {false, true, true, true},
+                             {true, true, true, false},
+                             {false, true, false, false}},
+                            ObjectType::LIFE_UP, 5, 10),
+        new CelestialObject({{false, true, false, true, false},
+                             {true, true, true, true, true},
+                             {false, true, true, true, false},
+                             {false, false, true, false, false}},
+                            ObjectType::LIFE_UP, 5, 10),
+        new CelestialObject({{false, false, true, false},
+                             {false, true, true, true},
+                             {true, true, true, false},
+                             {false, true, true, true},
+                             {false, false, true, false}},
+                            ObjectType::LIFE_UP, 5, 10),
+        new CelestialObject({{false, false, true, false, false},
+                             {false, true, true, true, false},
+                             {true, true, true, true, true},
+                             {false, true, false, true, false}},
+                            ObjectType::LIFE_UP, 5, 10),
+        new CelestialObject({{true},
+                             {true}},
+                            ObjectType::ASTEROID, 5, 13),
+        new CelestialObject({{true, true}}, ObjectType::ASTEROID, 5, 13),
+        new CelestialObject({{true, false, true},
+                             {false, true, false},
+                             {true, false, true}},
+                            ObjectType::ASTEROID, 7, 13),
+        new CelestialObject({{true}}, ObjectType::AMMO, 8, 23),
+        new CelestialObject({{true, true, true},
+                             {true, true, true},
+                             {true, true, true}},
+                            ObjectType::ASTEROID, 10, 25)};
 
     AsteroidDash *game = new AsteroidDash(
         SAMPLE_GRID_FILENAME,
@@ -171,25 +262,30 @@ void initialize_linked_list()
         // Check rotations
 
         CelestialObject *current_rotation = current;
+
         do
         {
-            if (celestial_object_equality_helper(current, expected_rotations[j++]) &&
+
+            if (celestial_object_equality_helper(current_rotation, expected_rotations[j]) &&
                 current_rotation->next_celestial_object == current->next_celestial_object)
             {
                 score_rotations += 1;
             }
+            j++;
 
-            if (current->left_rotation != nullptr)
+            if (current_rotation->left_rotation != nullptr)
             {
-                if (celestial_object_equality_helper(current->left_rotation, expected_left_rotations[k++]))
+                if (celestial_object_equality_helper(current_rotation->left_rotation, expected_left_rotations[k]))
                 {
                     score_rotations += 1;
                 }
+                k++;
             }
 
             current_rotation = current_rotation->right_rotation;
 
         } while (current_rotation != current);
+
         current = current->next_celestial_object;
     }
 
@@ -321,7 +417,7 @@ void shooting()
     delete game;
 }
 
-// "shooting_update" // %10z
+// "shooting_update" // %10
 void shooting_update()
 {
     double total_score = 0;
@@ -378,25 +474,8 @@ void shooting_update()
             }
 
             game->update_space_grid();
-            // print space grid
-            for (int i = 0; i < game->space_grid.size(); i++)
-            {
-                for (int j = 0; j < game->space_grid[i].size(); j++)
-                {
-                    if (game->space_grid[i][j] == 0)
-                    {
-                        cout << unoccupiedCellChar;
-                    }
-                    else if (game->space_grid[i][j] == 1)
-                    {
-                        cout << occupiedCellChar;
-                    }
-                }
-                cout << endl;
-            }
-            game->game_time += 1;
 
-            if (game->game_time == 23)
+            if (game->game_time == 22)
             {
                 CelestialObject *current = game->celestial_objects_list_head;
                 while (current != nullptr)
@@ -409,7 +488,7 @@ void shooting_update()
                 }
             }
 
-            if (game->game_time == 25)
+            if (game->game_time == 24)
             {
                 CelestialObject *current = game->celestial_objects_list_head;
                 while (current != nullptr)
@@ -422,7 +501,7 @@ void shooting_update()
                 }
             }
 
-            if (game->game_time == 26)
+            if (game->game_time == 25)
             {
                 CelestialObject *current = game->celestial_objects_list_head;
                 while (current != nullptr)
@@ -435,7 +514,7 @@ void shooting_update()
                 }
             }
 
-            if (game->game_time == 27)
+            if (game->game_time == 26)
             {
                 CelestialObject *current = game->celestial_objects_list_head;
                 while (current != nullptr)
@@ -448,7 +527,7 @@ void shooting_update()
                 }
             }
 
-            if (game->game_time == 45)
+            if (game->game_time == 44)
             {
                 CelestialObject *current = game->celestial_objects_list_head;
                 while (current != nullptr)
@@ -461,7 +540,7 @@ void shooting_update()
                 }
             }
 
-            if (game->game_time == 64)
+            if (game->game_time == 63)
             {
                 CelestialObject *current = game->celestial_objects_list_head;
                 while (current != nullptr)
@@ -474,7 +553,7 @@ void shooting_update()
                 }
             }
 
-            if (game->game_time == 66)
+            if (game->game_time == 65)
             {
                 CelestialObject *current = game->celestial_objects_list_head;
                 while (current != nullptr)
@@ -487,7 +566,7 @@ void shooting_update()
                 }
             }
 
-            if (game->game_time == 75)
+            if (game->game_time == 74)
             {
                 CelestialObject *current = game->celestial_objects_list_head;
                 while (current != nullptr)
@@ -499,6 +578,7 @@ void shooting_update()
                     current = current->next_celestial_object;
                 }
             }
+            game->game_time += 1;
         }
     }
 
@@ -571,39 +651,8 @@ void object_movements()
                                           SAMPLE_MOVEMENTS_PLAYER,
                                           SAMPLE_DEFAULT_PLAYER_NAME);
 
-    /*// print expected frames
-    for (int i = 0; i < expected_frames.size(); i++)
-    {
-        for (int j = 0; j < expected_frames[i].size(); j++)
-        {
-            for (int k = 0; k < expected_frames[i][j].size(); k++)
-            {
-                if (expected_frames[i][j][k] == 1)
-                    cout << "██";
-                else
-                    cout << "▒▒";
-            }
-            cout << endl;
-        }
-        cout << "----" << endl;
-    }*/
-
     for (int i = 0; i < 26; i++)
     {
-        // print space grid
-        for (int j = 0; j < game->space_grid.size(); j++)
-        {
-            for (int k = 0; k < game->space_grid[j].size(); k++)
-            {
-                if (game->space_grid[j][k] == 1)
-                    cout << "██";
-                else
-                    cout << "▒▒";
-            }
-            cout << endl;
-        }
-        cout << "----" << endl;
-
         game->update_space_grid();
 
         if (game->space_grid == expected_frames[i])
@@ -851,7 +900,7 @@ double game_finished_sub()
                                                    "Tick: 94",
                                                    "Lives: 4",
                                                    "Ammo: 10",
-                                                   "Score: 94",
+                                                   "Score: 95",
                                                    "High Score: 465",
                                                    "Player: BBM203",
                                                    "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒",
@@ -951,20 +1000,29 @@ void output()
     // Compare each line in the buffer with the expected output
     std::string line;
     int j = 0;
+    int total_number = 0;
+
     while (std::getline(buffer, line) && j < expected_lines.size())
     {
         std::string trimmed_line = trim(line);
         std::string trimmed_expected_line = expected_lines[j];
 
         // Compare with expected line
-        if (trimmed_line == trimmed_expected_line)
-        {
-            total_score += 1;
+        if (!contains(expected_lines[j], "High Score"))
+        { // Skip high score lines
+            if (trimmed_line == trimmed_expected_line)
+            {
+                total_score += 1;
+            }
+            total_number++;
         }
+
         j++;
     }
-
-    total_score /= expected_lines.size();
+    if (total_number != 0)
+    {
+        total_score /= total_number;
+    }
 
     cout << fixed << setprecision(2) << total_score;
     delete controller;

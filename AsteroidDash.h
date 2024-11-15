@@ -16,9 +16,9 @@
 using namespace std;
 
 // Class that encapsulates the game play internals
-class AsteroidDash {
+class AsteroidDash
+{
 public:
-
     // Constructor to initialize the game
     AsteroidDash(const string &space_grid_file_name, const string &celestial_objects_file_name,
                  const string &leaderboard_file_name, const string &player_file_name, const string &player_name);
@@ -27,7 +27,7 @@ public:
     virtual ~AsteroidDash();
 
     // 2D space_grid
-    vector<vector<int> > space_grid;
+    vector<vector<int>> space_grid;
 
     // Pointer to track the player instance
     Player *player = nullptr;
@@ -68,7 +68,21 @@ public:
 
     // Corresponds to the SHOOT command.
     void shoot();
-};
 
+    // Function to clear the grid
+    void clear_grid();
+
+    // Function to place the player on the grid
+    void place_player();
+
+    // Function to detect collisions with player
+    void detect_collisions();
+
+    // Function to update the objects positions
+    void update_objects_positions();
+
+    // Function to check bullets' positions and detect collisions
+    void check_bullets_positions();
+};
 
 #endif // ASTEROIDDASH_H

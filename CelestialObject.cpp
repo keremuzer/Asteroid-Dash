@@ -52,25 +52,9 @@ void CelestialObject::create_rotations()
             new_rotation->left_rotation = current;
             current = new_rotation;
         }
-
         current->right_rotation = first_rotation;
         first_rotation->left_rotation = current;
     }
-
-    /*CelestialObject *current_rotation = first_rotation;
-    do
-    {
-        for (int i = 0; i < current_rotation->shape.size(); i++)
-        {
-            for (int j = 0; j < current_rotation->shape[i].size(); j++)
-            {
-                std::cout << current_rotation->shape[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << "---" << std::endl;
-        current_rotation = current_rotation->right_rotation;
-    } while (current_rotation != first_rotation);*/
 }
 
 // Function to rotate the celestial object to the right

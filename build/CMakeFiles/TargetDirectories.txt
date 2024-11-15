@@ -1,3 +1,0 @@
-/home/kerem/projects/Asteroid-Dash/build/CMakeFiles/AsteroidDash.dir
-/home/kerem/projects/Asteroid-Dash/build/CMakeFiles/edit_cache.dir
-/home/kerem/projects/Asteroid-Dash/build/CMakeFiles/rebuild_cache.dir
