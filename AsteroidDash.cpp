@@ -179,7 +179,7 @@ void AsteroidDash::print_space_grid() const
     std::cout << "Lives: " << player->lives << std::endl;
     std::cout << "Ammo: " << player->current_ammo << std::endl;
     std::cout << "Score: " << current_score << std::endl;
-    std::cout << "High Score: " << "0" << std::endl;
+    std::cout << "High Score: " << current_score << std::endl;
 
     for (int i = 0; i < space_grid.size(); i++)
     {
@@ -196,6 +196,7 @@ void AsteroidDash::print_space_grid() const
         }
         std::cout << std::endl;
     }
+    std::cout << endl;
 }
 
 // Function to clear the grid
@@ -259,6 +260,32 @@ void AsteroidDash::detect_collisions()
                                     if (player->lives == 0)
                                     {
                                         game_over = true;
+
+                                        std::cout << "GAME OVER!" << std::endl;
+                                        std::cout << "Tick: " << game_time << std::endl;
+                                        std::cout << "Lives: " << 0 << std::endl;
+                                        std::cout << "Ammo: " << player->current_ammo << std::endl;
+                                        std::cout << "Score: " << current_score << std::endl;
+                                        std::cout << "High Score: " << current_score << std::endl;
+
+                                        for (int i = 0; i < space_grid.size(); i++)
+                                        {
+                                            for (int j = 0; j < space_grid[i].size(); j++)
+                                            {
+                                                if (space_grid[i][j] == 1)
+                                                {
+                                                    std::cout << occupiedCellChar;
+                                                }
+                                                else
+                                                {
+                                                    std::cout << unoccupiedCellChar;
+                                                }
+                                            }
+                                            std::cout << std::endl;
+                                        }
+                                        std::cout << endl
+                                                  << "Leaderboard" << endl;
+                                        std::cout << "-----------" << endl;
                                     }
                                     current->destroyed = true;
                                     flag = true;
@@ -292,7 +319,7 @@ void AsteroidDash::update_objects_positions()
     {
         bool flag = false;
         // check every pixel of the object
-        if (current->time_of_appearance <= game_time && !current->destroyed)
+        if (current->time_of_appearance <= game_time - 1 && !current->destroyed)
         {
             for (int i = 0; i < current->shape.size(); i++)
             {
@@ -431,7 +458,6 @@ void AsteroidDash::check_bullets_positions()
 // It is called in every game tick before moving on to the next tick.
 void AsteroidDash::update_space_grid()
 {
-    current_score += 1;
     clear_grid();
     place_player();
     detect_collisions();
@@ -520,5 +546,13 @@ AsteroidDash::~AsteroidDash()
     // TODO: Your code here
     delete player;
     CelestialObject::delete_rotations(celestial_objects_list_head);
-    leaderboard.write_to_file(leaderboard_file_name);
+
+    CelestialObject *current = celestial_objects_list_head;
+    while (current != nullptr)
+    {
+        CelestialObject *temp = current;
+        current = current->next_celestial_object;
+        delete temp;
+    }
+    delete current;
 }

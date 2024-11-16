@@ -83,6 +83,8 @@ public:
 
     // Function to check bullets' positions and detect collisions
     void check_bullets_positions();
+
+    int high_score = 0;
 };
 
 #endif // ASTEROIDDASH_H

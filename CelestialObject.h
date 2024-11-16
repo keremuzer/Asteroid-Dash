@@ -63,6 +63,8 @@ public:
     int col = 0;
 
     vector<vector<bool>> original_shape = shape;
+
+    ~CelestialObject();
 };
 
 #endif // CELESTIALOBJECT_H

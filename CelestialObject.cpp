@@ -116,3 +116,9 @@ void CelestialObject::delete_rotations(CelestialObject *target)
     target->right_rotation = target;
     target->left_rotation = target;
 }
+
+// destructor
+CelestialObject::~CelestialObject()
+{
+    delete_rotations(this);
+}

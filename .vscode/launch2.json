@@ -1,12 +1,12 @@
-{ 
+{
     "version": "0.2.0",
     "configurations": [
     {
     "name": "WSL Debug",
     "type": "cppdbg",
     "request": "launch",
-    "program": "${workspaceFolder}/AsteroidDash",
-    "args": ["sample_input_space_grid.dat", "sample_input_celestial_objects.dat", "sample_input_player.dat", "sample_input_commands.dat", "leaderboard.txt", "gorkem"],
+    "program": "${workspaceFolder}/test",
+    "args": ["leaderboard"],
     "stopAtEntry": false,
     "cwd": "${workspaceFolder}",
     "environment": [],
